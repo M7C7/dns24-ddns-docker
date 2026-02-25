@@ -1,0 +1,15 @@
+services:
+  ddns-updater:
+    build: .
+    image: ddns-updater:latest
+    container_name: ddns-updater
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    environment:
+      - TZ=Europe/Zurich
+    volumes:
+      - ./config:/config
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8

@@ -1,0 +1,10 @@
+config/
+README.md
+LICENSE
+DEPLOY-GUIDE.md
+*.tar.gz
+*.zip
+*.bak*
+.git/
+.gitignore
+.gitattributes

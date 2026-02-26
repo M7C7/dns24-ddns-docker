@@ -1198,7 +1198,7 @@ main() {
         local dyn_count=0 static_count=0
         for rec in "${PARSED_RECORDS[@]}"; do
             IFS='|' read -r _ _ _ category _ <<< "$rec"
-            [[ "$category" == "dynamic" ]] && ((dyn_count++)) || ((static_count++)) || true
+            [[ "$category" == "dynamic" ]] && ((dyn_count+=1)) || ((static_count+=1))
         done
 
         discord_send "🟢 DDNS Updater — Started" \

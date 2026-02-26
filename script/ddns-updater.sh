@@ -1230,7 +1230,7 @@ main() {
         return 1
     fi
 
-    log_info "Old: ${old_ip:-none} | New: ${new_ip} | Source: ${IP_SOURCE}"
+    log_info "Old: ${old_ip:-none} | New: ${new_ip} | Source: ${IP_SOURCE} | Status: $([[ "$new_ip" == "$old_ip" ]] && echo unchanged || echo updated)"
 
     # IPv6 if needed
     local new_ipv6=""
@@ -1289,7 +1289,6 @@ main() {
 
     # ── No change, no drift ──
     if [[ "$ip_changed" == false && "$force_update" == false ]]; then
-        log_info "IP unchanged."
         if [[ "$DISCORD_NOTIFY_UNCHANGED" == "true" ]]; then
             discord_send "ℹ️ DDNS — No Change" \
                 "IP still \`${new_ip}\`" "$COLOR_GREY"

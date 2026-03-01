@@ -124,7 +124,70 @@ After every update, records are verified against `ns1.dns24.ch` and `ns2.dns24.c
 
 Every N cycles (configurable), a random record is checked against the authoritative nameserver. If the NS returns an unexpected value (manual change, silent rollback), all dynamic records are re-pushed and a Discord alert is sent.
 
-## Synology DSM
+## Synology DSM (Container Manager / Docker)
+
+### Option 1 — Use the prebuilt image
+
+You can download the image directly in Synology Container Manager.
+
+Docker Hub repository:  
+https://hub.docker.com/r/m7c7/dns24-ddns
+
+Or pull it via SSH:
+
+```bash
+docker pull m7c7/dns24-ddns:latest
+```
+
+Create a new container from `m7c7/dns24-ddns:latest`.
+
+#### Volume mapping (required)
+
+Map a persistent host directory to `/config` inside the container.
+
+Example:
+
+- Host path: `/volume1/docker/dns24-ddns/config`
+- Container path: `/config`
+
+The `/config` directory contains:
+
+- `.env` (credentials and settings)
+- `records/` (one file per domain)
+- `meta/` (runtime state, IP history, retry queue, outage counter, etc.)
+
+If this directory is not mapped, configuration and runtime data will be lost after a restart.
+
+#### Restart policy
+
+Set the restart policy to:
+
+```
+Restart automatically (unless stopped)
+```
+
+#### DNS servers (recommended)
+
+Configure custom DNS servers for the container:
+
+```
+1.1.1.1
+8.8.8.8
+```
+
+After starting the container:
+
+1. Open `/volume1/docker/dns24-ddns/config`
+2. Edit the generated `.env` file and add your DNS24 credentials
+3. Create your domain files inside `config/records/`
+
+The container detects configuration changes automatically (within ~30 seconds) and begins updating.
+
+---
+
+### Option 2 — Deploy via SSH and docker-compose
+
+Connect to your NAS and deploy manually:
 
 ```bash
 ssh user@your-nas
@@ -134,6 +197,23 @@ cd dns24-ddns-docker
 sudo docker-compose up -d --build
 sudo docker-compose logs -f --tail=100
 ```
+
+This process:
+
+- Clones the repository
+- Builds the image locally
+- Applies the volume mapping defined in `docker-compose.yml`
+- Starts the container in detached mode
+- Displays the last 100 log lines for verification
+
+On first startup, the container creates `config/.env` and waits for valid credentials.
+
+After saving your credentials, the next cycle:
+
+- Detects your current IPv4 (and IPv6 if configured)
+- Pushes dynamic records to dns24
+- Verifies them against `ns1.dns24.ch` and `ns2.dns24.ch`
+- Starts propagation tracking if enabled
 
 ## Usage
 
@@ -270,21 +350,6 @@ docker run -d --name ddns-updater \
   -v $(pwd)/config:/config \
   --dns 1.1.1.1 --dns 8.8.8.8 \
   ddns-updater
-```
-
-### Push to Docker Hub
-
-```bash
-docker build -t m7c7/dns24-ddns:latest .
-docker login
-docker push m7c7/dns24-ddns:latest
-```
-
-### Push to GitHub Container Registry
-
-```bash
-docker build -t ghcr.io/m7c7/dns24-ddns:latest .
-docker push ghcr.io/m7c7/dns24-ddns:latest
 ```
 
 ## Troubleshooting

@@ -225,7 +225,8 @@ All settings in `config/.env`. Only `DNS24_USER` and `DNS24_PASS` are required.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `DNS24_USER` | — | dns24.ch username (email) |
+| `DNS24_USER` | — | dns24.ch username (email - 
+case-sensitive) |
 | `DNS24_PASS` | — | dns24.ch password (use single quotes for special chars) |
 | `DNS24_API_URL` | `http://dyn.dns24.ch/update` | API endpoint |
 

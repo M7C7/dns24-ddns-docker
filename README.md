@@ -166,15 +166,6 @@ Set the restart policy to:
 Restart automatically (unless stopped)
 ```
 
-#### DNS servers (recommended)
-
-Configure custom DNS servers for the container:
-
-```
-1.1.1.1
-8.8.8.8
-```
-
 After starting the container:
 
 1. Open `/volume1/docker/dns24-ddns/config`
